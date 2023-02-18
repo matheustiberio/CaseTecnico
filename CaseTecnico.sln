@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B7E2E35E-8FEE-4184-8EB3-7A55DB589F99}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseTecnicoApi", "CaseTecnicoApi\CaseTecnicoApi.csproj", "{67717B75-D4F2-410C-8697-B16E1761F33B}"
 EndProject
