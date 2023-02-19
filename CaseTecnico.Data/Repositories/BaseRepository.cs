@@ -42,7 +42,7 @@ namespace CaseTecnico.Data.Repositories
             return entidade;
         }
 
-        public async Task<List<T>> ObterAsync()
+        public async Task<List<T>> ListarAsync()
         {
             return await _dbSet.ToListAsync();
         }

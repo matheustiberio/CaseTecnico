@@ -13,26 +13,26 @@ namespace CaseTecnico.Application.Services.Clientes
             _clienteRepository = clienteRepository;
         }
 
-        public async Task<Cliente?> AtualizarAsync(int id, AtualizarClienteRequest request)
+        public async Task<Cliente> AtualizarAsync(int id, AtualizarClienteRequest request)
         {
-            //validar existencia de email
             var cliente = await _clienteRepository.ObterPorIdAsync(id);
 
             if (cliente == null)
-                return null;
+                throw new Exception("Cliente não encontrado.");
 
-            //! validar existencia de email
+            if (await _clienteRepository.EmailExistente(request.Email, id))
+                throw new Exception("Este e-mail já está em uso.");
 
             cliente.NomeCompleto = request.NomeCompleto;
             cliente.Email = request.Email;
-
 
             return await _clienteRepository.AtualizarAsync(cliente);
         }
 
         public async Task<Cliente> CriarAsync(CriarClienteRequest request)
         {
-            //! validar existencia de email
+            if (await _clienteRepository.EmailExistente(request.Email))
+                throw new Exception("Este e-mail já está em uso.");
 
             var novoCliente = new Cliente(request.NomeCompleto, request.Email);
 
@@ -44,14 +44,19 @@ namespace CaseTecnico.Application.Services.Clientes
             var cliente = await _clienteRepository.ObterPorEmailAsync(email);
 
             if (cliente == null)
-                return false;
+                throw new Exception("Cliente não encontrado.");
 
-            return await _clienteRepository.ExcluirAsync(cliente);
+            var clienteExcluido = await _clienteRepository.ExcluirAsync(cliente);
+
+            if (!clienteExcluido)
+                throw new Exception("Erro ao excluir o cliente.");
+
+            return clienteExcluido;
         }
 
-        public async Task<List<Cliente>> Obter()
+        public async Task<List<Cliente>> Listar()
         {
-            return await _clienteRepository.ObterAsync();
+            return await _clienteRepository.ListarAsync();
         }
 
         public async Task<Cliente?> ObterPorEmailAsync(string email)

@@ -8,7 +8,7 @@
 
         public Task<T> CriarAsync(T entidade);
 
-        public Task<List<T>> ObterAsync();
+        public Task<List<T>> ListarAsync();
 
         public Task<T?> ObterPorIdAsync(int id);
     }
