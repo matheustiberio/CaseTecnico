@@ -30,11 +30,11 @@ namespace CaseTecnicoApi.Endpoints
 
         [SwaggerOperation(Summary = "Cria um cliente.", Description = "Cria um cliente com o nome e e-mail requisitado. O e-mail deve ser único.")]
         [SwaggerResponse(201, "Created", typeof(Cliente))]
-        [SwaggerResponse(400, "BadRequest", typeof(ValidationResult))]
+        [SwaggerResponse(400, "BadRequest", typeof(ValidationRequestResult))]
         [SwaggerResponse(422, "UnprocessableEntity", typeof(Error))]
         async Task<IResult> Criar(IClienteService clienteService, IValidator<CriarClienteRequest> validator, CriarClienteRequest request)
         {
-            var validationResult = request.Validate(validator);
+            var validationResult = request.ValidateRequest(validator);
 
             if (!validationResult.IsValid)
                 return Results.BadRequest(validationResult.Errors);
@@ -49,11 +49,11 @@ namespace CaseTecnicoApi.Endpoints
         
         [SwaggerOperation(Summary = "Atualiza um cliente.", Description = "Atualiza um cliente com o nome e e-mail requisitado.")]
         [SwaggerResponse(200, "Ok", typeof(Cliente))]
-        [SwaggerResponse(400, "BadRequest", typeof(ValidationResult))]
+        [SwaggerResponse(400, "BadRequest", typeof(ValidationRequestResult))]
         [SwaggerResponse(422, "UnprocessableEntity", typeof(Error))]
         async Task<IResult> Atualizar(IClienteService clienteService, IValidator<AtualizarClienteRequest> validator, int id, AtualizarClienteRequest request)
         {
-            var validationResult = request.Validate(validator);
+            var validationResult = request.ValidateRequest(validator);
 
             if (!validationResult.IsValid)
                 return Results.BadRequest(validationResult.Errors);
