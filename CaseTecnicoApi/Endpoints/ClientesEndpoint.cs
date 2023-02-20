@@ -1,6 +1,7 @@
-﻿using CaseTecnico.Application.Contracts.Requests;
+﻿using CaseTecnico.Application.Contracts.Extensions;
+using CaseTecnico.Application.Contracts.Requests;
 using CaseTecnico.Application.Services.Clientes;
-using CaseTecnico.Domain.ResultObject;
+using FluentValidation;
 
 namespace CaseTecnicoApi.Endpoints
 {
@@ -25,8 +26,13 @@ namespace CaseTecnicoApi.Endpoints
             return Results.Ok(result.Data);
         }
 
-        async Task<IResult> Criar(IClienteService clienteService, CriarClienteRequest request)
+        async Task<IResult> Criar(IClienteService clienteService, IValidator<CriarClienteRequest> validator, CriarClienteRequest request)
         {
+            var (isValid, errors) = request.Validate(validator);
+            
+            if (!isValid)
+                return Results.BadRequest(errors);
+
             var result = await clienteService.CriarAsync(request);
 
             if (result.Failure)
@@ -35,8 +41,13 @@ namespace CaseTecnicoApi.Endpoints
             return Results.Created("api/clientes/", result.Data);
         }
 
-        async Task<IResult> Atualizar(IClienteService clienteService, int id, AtualizarClienteRequest request)
+        async Task<IResult> Atualizar(IClienteService clienteService, IValidator<AtualizarClienteRequest> validator, int id, AtualizarClienteRequest request)
         {
+            var (isValid, errors) = request.Validate(validator);
+
+            if (!isValid)
+                return Results.BadRequest(errors);
+
             var result = await clienteService.AtualizarAsync(id, request);
 
             if (result.Failure)

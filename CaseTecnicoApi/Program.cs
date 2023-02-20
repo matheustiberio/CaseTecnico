@@ -1,4 +1,6 @@
+using CaseTecnico.Application.Contracts.Validators;
 using CaseTecnicoApi.Extensions;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
 builder.Services.AddEndpoints();
 builder.Services.AddDatabaseContexts();
+builder.Services.AddValidatorsFromAssemblyContaining<CriarClienteRequestValidator>();
 
 var app = builder.Build();
 
