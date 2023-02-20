@@ -35,6 +35,8 @@ namespace CaseTecnico.Data.Repositories
 
         public async Task<T> CriarAsync(T entidade)
         {
+            entidade.CriadoEm = DateTime.Now;
+
             _dbSet.Add(entidade);
 
             await _databaseContext.SaveChangesAsync();

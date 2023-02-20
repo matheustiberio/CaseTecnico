@@ -5,7 +5,11 @@ using FluentValidation;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+    s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Case Tecnico - PBTech" });
+    s.EnableAnnotations();
+});
 
 builder.Services.AddServices();
 builder.Services.AddEndpoints();
