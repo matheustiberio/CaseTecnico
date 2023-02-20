@@ -1,6 +1,7 @@
 ﻿using CaseTecnico.Application.Contracts.Requests;
 using CaseTecnico.Application.Models.Entities;
 using CaseTecnico.Data.Repositories;
+using CaseTecnico.Domain.ResultObject;
 
 namespace CaseTecnico.Application.Services.Clientes
 {
@@ -13,15 +14,15 @@ namespace CaseTecnico.Application.Services.Clientes
             _clienteRepository = clienteRepository;
         }
 
-        public async Task<Cliente> AtualizarAsync(int id, AtualizarClienteRequest request)
+        public async Task<Result<Cliente>> AtualizarAsync(int id, AtualizarClienteRequest request)
         {
             var cliente = await _clienteRepository.ObterPorIdAsync(id);
 
             if (cliente == null)
-                throw new Exception("Cliente não encontrado.");
+                return Result<Cliente>.FailureResult(MensagensErro.ClienteNaoEncontrado);
 
             if (await _clienteRepository.EmailExistente(request.Email, id))
-                throw new Exception("Este e-mail já está em uso.");
+                return Result<Cliente>.FailureResult(MensagensErro.EmailJaUtilizado);
 
             cliente.NomeCompleto = request.NomeCompleto;
             cliente.Email = request.Email;
@@ -29,39 +30,39 @@ namespace CaseTecnico.Application.Services.Clientes
             return await _clienteRepository.AtualizarAsync(cliente);
         }
 
-        public async Task<Cliente> CriarAsync(CriarClienteRequest request)
+        public async Task<Result<Cliente>> CriarAsync(CriarClienteRequest request)
         {
             if (await _clienteRepository.EmailExistente(request.Email))
-                throw new Exception("Este e-mail já está em uso.");
+                return Result<Cliente>.FailureResult(MensagensErro.EmailJaUtilizado);
 
             var novoCliente = new Cliente(request.NomeCompleto, request.Email);
 
             return await _clienteRepository.CriarAsync(novoCliente);
         }
 
-        public async Task<bool> ExcluirAsync(string email)
+        public async Task<Result<bool>> ExcluirAsync(string email)
         {
             var cliente = await _clienteRepository.ObterPorEmailAsync(email);
 
             if (cliente == null)
-                throw new Exception("Cliente não encontrado.");
+                return Result<bool>.FailureResult(MensagensErro.ClienteNaoEncontrado);
 
-            var clienteExcluido = await _clienteRepository.ExcluirAsync(cliente);
-
-            if (!clienteExcluido)
-                throw new Exception("Erro ao excluir o cliente.");
-
-            return clienteExcluido;
+            return await _clienteRepository.ExcluirAsync(cliente);
         }
 
-        public async Task<List<Cliente>> Listar()
+        public async Task<Result<List<Cliente>>> Listar()
         {
             return await _clienteRepository.ListarAsync();
         }
 
-        public async Task<Cliente?> ObterPorEmailAsync(string email)
+        public async Task<Result<Cliente>> ObterPorEmailAsync(string email)
         {
-            return await _clienteRepository.ObterPorEmailAsync(email);
+            var cliente = await _clienteRepository.ObterPorEmailAsync(email);
+            
+            if (cliente == null)
+                return Result<Cliente>.FailureResult(MensagensErro.ClienteNaoEncontrado);
+            
+            return cliente;
         }
     }
 }

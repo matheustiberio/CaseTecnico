@@ -10,7 +10,7 @@ namespace CaseTecnicoApi.Extensions
 
             foreach (var module in endpoints)
             {
-                module.DefineRoutes(app);
+                module.DefinirRotas(app);
             }
         }
     }

@@ -2,6 +2,6 @@
 {
     public interface IEndpoint
     {
-        void DefineRoutes(WebApplication app);
+        void DefinirRotas(WebApplication app);
     }
 }

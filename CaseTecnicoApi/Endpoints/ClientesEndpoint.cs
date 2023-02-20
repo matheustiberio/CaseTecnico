@@ -1,11 +1,12 @@
 ﻿using CaseTecnico.Application.Contracts.Requests;
 using CaseTecnico.Application.Services.Clientes;
+using CaseTecnico.Domain.ResultObject;
 
 namespace CaseTecnicoApi.Endpoints
 {
     public class ClientesEndpoint : IEndpoint
     {
-        public void DefineRoutes(WebApplication app)
+        public void DefinirRotas(WebApplication app)
         {
             app.MapGet("api/clientes/", Listar);
             app.MapGet("api/clientes/{email}", ObterPorEmail);
@@ -16,49 +17,52 @@ namespace CaseTecnicoApi.Endpoints
 
         async Task<IResult> Listar(IClienteService clienteService)
         {
-            var clientes = await clienteService.Listar();
+            var result = await clienteService.Listar();
 
-            return Results.Ok(clientes);
+            if (result.Failure)
+                return Results.UnprocessableEntity(result.Error);
+
+            return Results.Ok(result.Data);
         }
 
         async Task<IResult> Criar(IClienteService clienteService, CriarClienteRequest request)
         {
-            var novoCliente = await clienteService.CriarAsync(request);
+            var result = await clienteService.CriarAsync(request);
 
-            if (novoCliente == null)
-                return Results.UnprocessableEntity();
+            if (result.Failure)
+                return Results.UnprocessableEntity(result.Error);
 
-            return Results.Ok(novoCliente);
+            return Results.Created("api/clientes/", result.Data);
         }
 
         async Task<IResult> Atualizar(IClienteService clienteService, int id, AtualizarClienteRequest request)
         {
-            var clienteAtualizado = await clienteService.AtualizarAsync(id, request);
+            var result = await clienteService.AtualizarAsync(id, request);
 
-            if (clienteAtualizado == null)
-                return Results.UnprocessableEntity();
+            if (result.Failure)
+                return Results.UnprocessableEntity(result.Error);
 
-            return Results.Ok(clienteAtualizado);
+            return Results.Ok(result.Data);
         }
 
         async Task<IResult> Excluir(IClienteService clienteService, string email)
         {
-            bool excluidoComSucesso = await clienteService.ExcluirAsync(email);
+            var result = await clienteService.ExcluirAsync(email);
 
-            if (!excluidoComSucesso)
-                return Results.UnprocessableEntity();
+            if (result.Failure)
+                return Results.UnprocessableEntity(result.Error);
 
             return Results.NoContent();
         }
 
         async Task<IResult> ObterPorEmail(IClienteService clienteService, string email)
         {
-            var cliente = await clienteService.ObterPorEmailAsync(email);
+            var result = await clienteService.ObterPorEmailAsync(email);
 
-            if (cliente == null)
-                return Results.NotFound();
+            if (result.Failure)
+                return Results.UnprocessableEntity(result.Error);
 
-            return Results.Ok(cliente);
+            return Results.Ok(result.Data);
         }
     }
 }
