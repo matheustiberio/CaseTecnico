@@ -1,7 +1,10 @@
-﻿using CaseTecnico.Application.Services.Clientes;
+﻿using CaseTecnico.Application.Contracts.Validators;
+using CaseTecnico.Application.Services.Clientes;
 using CaseTecnico.Data.Database;
 using CaseTecnico.Data.Repositories;
 using CaseTecnicoApi.Endpoints;
+using CaseTecnicoApi.Middlewares;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CaseTecnicoApi.Extensions
@@ -28,6 +31,16 @@ namespace CaseTecnicoApi.Extensions
                     .Select(Activator.CreateInstance).Cast<IEndpoint>());
 
             services.AddSingleton(endpoints as IReadOnlyCollection<IEndpoint>);
+        }
+
+        public static void AddValidators(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssemblyContaining<CriarClienteRequestValidator>();
+        }
+
+        public static void AddMiddlewares(this IServiceCollection services)
+        {
+            services.AddScoped<ExceptionHandlingMiddleware>();
         }
     }
 }

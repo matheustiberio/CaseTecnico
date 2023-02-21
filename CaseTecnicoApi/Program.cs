@@ -1,6 +1,5 @@
-using CaseTecnico.Application.Contracts.Validators;
 using CaseTecnicoApi.Extensions;
-using FluentValidation;
+using CaseTecnicoApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +13,13 @@ builder.Services.AddSwaggerGen(s =>
 builder.Services.AddServices();
 builder.Services.AddEndpoints();
 builder.Services.AddDatabaseContexts();
-builder.Services.AddValidatorsFromAssemblyContaining<CriarClienteRequestValidator>();
+builder.Services.AddValidators();
+builder.Services.AddMiddlewares();
 
 var app = builder.Build();
 
 app.UseEndpoints();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
