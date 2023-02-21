@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen(s =>
 
 builder.Services.AddServices();
 builder.Services.AddEndpoints();
-builder.Services.AddDatabaseContexts();
+builder.Services.AddDatabaseContexts(builder.Configuration);
 builder.Services.AddValidators();
 builder.Services.AddMiddlewares();
 

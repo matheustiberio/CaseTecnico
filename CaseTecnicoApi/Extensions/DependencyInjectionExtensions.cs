@@ -17,9 +17,22 @@ namespace CaseTecnicoApi.Extensions
             services.AddScoped<IClienteService, ClienteService>();
         }
 
-        public static void AddDatabaseContexts(this IServiceCollection services)
+        public static void AddDatabaseContexts(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase("ClientesDb"));
+            var(connectionString, mySqlServerVersion) = GetDatabaseConnection(configuration);
+
+            services.AddDbContext<DatabaseContext>(options => options.UseMySql(connectionString, mySqlServerVersion));
+        }
+
+        private static (string ConnectionString, MySqlServerVersion MySqlVersion) GetDatabaseConnection(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("MySQL");
+            var databaseVersion = configuration.GetSection("ConnectionStrings").GetSection("Version").Value;
+
+            int majorVersion = Convert.ToInt32(databaseVersion.Split(".")[0]);
+            int minorVersion = Convert.ToInt32(databaseVersion.Split(".")[2]);
+
+            return (connectionString, new(new Version(majorVersion, minorVersion)));
         }
 
         public static void AddEndpoints(this IServiceCollection services)
